@@ -5,10 +5,6 @@ const cloudinary = require("cloudinary").v2;
 const fileUpload = require("express-fileupload");
 const isAuthenticated = require("../middlewares/isAuthenticated");
 
-const convertToBase64 = (file) => {
-  return `data:${file.mimetype};base64,${file.data.toString("base64")}`;
-};
-
 // GET offers by Id
 router.get("/offer/:id", isAuthenticated, async (req, res) => {
   try {
@@ -21,7 +17,7 @@ router.get("/offer/:id", isAuthenticated, async (req, res) => {
     //   path: "owner",
     //   select: "account",
     // });
-    const findOfferById = await Offer.findById(id).populate("owner","account");
+    const findOfferById = await Offer.findById(id).populate("owner", "account");
 
     res.status(200).json({ message: findOfferById });
   } catch (error) {
@@ -79,7 +75,7 @@ router.get("/offers", isAuthenticated, async (req, res) => {
       .skip(page ? (page - 1) * resultToReturn : null)
       .limit(resultToReturn)
       .sort(setSortObj(sort))
-    .select("_id, product_price");
+      .select("_id, product_price");
 
     const count = Object.keys(findOffers).length;
 
@@ -94,6 +90,11 @@ router.get("/offers", isAuthenticated, async (req, res) => {
   }
 });
 
+const convertToBase64 = (file) => {
+  console.log("ICI", file);
+  return `data:${file.mimetype};base64,${file.data.toString("base64")}`;
+};
+
 // POST an offer
 router.post(
   "/offer/publish",
@@ -102,7 +103,7 @@ router.post(
   async (req, res) => {
     try {
       const files = req.files.product_image;
-      // console.log(files);
+      console.log(files);
       const user = req.user;
       const {
         account: {
@@ -137,18 +138,19 @@ router.post(
         ],
         owner: user,
       });
-      // console.log(newOffer);
 
-      const uploadPicture = await cloudinary.uploader.upload(
-        convertToBase64(files),
-        {
+      const arrayOfPictures = files.map((file) => {
+        return cloudinary.uploader.upload(convertToBase64(file), {
           folder: "vinted/offers",
-          public_id: newOffer._id,
-        }
-      );
+          display_name: newOffer._id,
+        });
+      });
 
-      newOffer.product_image = uploadPicture;
-      // console.log(newOffer);
+      const uploadPictures = await Promise.all(arrayOfPictures);
+      console.log(uploadPictures);
+
+      newOffer.product_image = uploadPictures;
+
       await newOffer.save();
 
       res.status(200).json({ message: newOffer });

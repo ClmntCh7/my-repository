@@ -16,7 +16,7 @@ const Offer = mongoose.model("Offer", {
 
   product_details: Array,
 
-  product_image: Object,
+  product_image: Array,
   owner: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
