@@ -10,9 +10,9 @@ app.use(cors());
 mongoose.connect(process.env.MONGODB_URI);
 
 cloudinary.config({
-    cloud_name: CLOUDINARY_CLOUD_NAME,
-    api_key: CLOUDINARY_API_KEY,
-    api_secret: CLOUDINARY_API_SECRET,
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET,
     secure: true,
   });
 
@@ -26,6 +26,6 @@ app.all("*", (req,res) => {
     res.status(404).json({ message: "This route doesn't exist" });
 })
 
-app.listen(PORT, () => {
+app.listen(process.env.PORT, () => {
     console.log("Server Started");
 })
