@@ -74,8 +74,8 @@ router.get("/offers", async (req, res) => {
     const findOffers = await Offer.find(setfilters(query))
       .skip(page ? (page - 1) * resultToReturn : null)
       .limit(resultToReturn)
-      .sort(setSortObj(sort))
-      .select("_id, product_price");
+      .sort(setSortObj(sort));
+    // .select("_id, product_price");
 
     const count = Object.keys(findOffers).length;
 
