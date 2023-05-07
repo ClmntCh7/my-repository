@@ -26,7 +26,7 @@ router.get("/offer/:id", isAuthenticated, async (req, res) => {
 });
 
 // GET searched offers
-router.get("/offers", isAuthenticated, async (req, res) => {
+router.get("/offers", async (req, res) => {
   try {
     const query = req.query;
     const { title, priceMin, priceMax, sort, page } = query;
