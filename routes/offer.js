@@ -81,7 +81,7 @@ router.get("/offers", async (req, res) => {
 
     const formatedResp = {
       count: count,
-      findOffers: findOffers,
+      offers: findOffers,
     };
 
     res.status(200).json({ message: formatedResp });
