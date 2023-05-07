@@ -18,16 +18,15 @@ router.post("/user/signup", fileUpload(), async (req, res) => {
   try {
     const body = req.body;
     const { username, email, password, newsletter } = body;
-    const files = req.files.avatar;
+    // const files = req.files.avatar;
 
     console.log(username, typeof username);
     // console.log(files);
 
     //Search username in the DB
     const findUser = await User.findOne({
-      "account.username" : username
+      "account.username": username,
     });
-
 
     //Check if username is NOT empty
     if (username) {
@@ -51,14 +50,14 @@ router.post("/user/signup", fileUpload(), async (req, res) => {
           token: token,
         });
 
-        const uploadPicture = await cloudinary.uploader.upload(
-          convertToBase64(files),
-          {
-            folder: "/vinted/userAvatar",
-            public_id: newUser._id,
-          }
-        );
-        newUser.account.avatar = uploadPicture;
+        // const uploadPicture = await cloudinary.uploader.upload(
+        //   convertToBase64(files),
+        //   {
+        //     folder: "/vinted/userAvatar",
+        //     public_id: newUser._id,
+        //   }
+        // );
+        // newUser.account.avatar = uploadPicture;
 
         //Save user in the DB
         await newUser.save();
