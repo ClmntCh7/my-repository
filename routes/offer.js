@@ -71,7 +71,7 @@ router.get("/offers", async (req, res) => {
       return filters;
     };
 
-    const resultToReturn = 20;
+    const resultToReturn = 10;
 
     const findOffers = await Offer.find(setfilters(query))
       .skip(page ? (page - 1) * resultToReturn : null)
