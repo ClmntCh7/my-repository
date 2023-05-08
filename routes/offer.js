@@ -6,7 +6,7 @@ const fileUpload = require("express-fileupload");
 const isAuthenticated = require("../middlewares/isAuthenticated");
 
 // GET offers by Id
-router.get("/offer/:id", isAuthenticated, async (req, res) => {
+router.get("/offer/:id", async (req, res) => {
   try {
     const params = req.params;
     const { id } = params;
