@@ -18,12 +18,9 @@ router.post("/user/signup", fileUpload(), async (req, res) => {
   try {
     const body = req.body;
     const { username, email, password, newsletter } = body;
-    // const files = req.files.avatar;
+    const files = req.files.avatar;
 
-    console.log(username, typeof username);
-    // console.log(files);
-
-    //Search username in the DB
+    //Search email in the DB
     const findUser = await User.findOne({
       "account.username": username,
     });
@@ -35,7 +32,6 @@ router.post("/user/signup", fileUpload(), async (req, res) => {
         //Create a salt, create a hash (salt + password) and encrypt it, generate a token from hash
         const salt = uid2(16);
         const hash = SHA256(salt + password).toString(encBase64);
-        // console.log(hash);
         const token = uid2(64);
 
         //Create a new User object
@@ -43,6 +39,7 @@ router.post("/user/signup", fileUpload(), async (req, res) => {
           email: email,
           account: {
             username: username,
+            avatar: files,
           },
           newsletter: newsletter,
           salt: salt,
@@ -50,14 +47,14 @@ router.post("/user/signup", fileUpload(), async (req, res) => {
           token: token,
         });
 
-        // const uploadPicture = await cloudinary.uploader.upload(
-        //   convertToBase64(files),
-        //   {
-        //     folder: "/vinted/userAvatar",
-        //     public_id: newUser._id,
-        //   }
-        // );
-        // newUser.account.avatar = uploadPicture;
+        const uploadPicture = await cloudinary.uploader.upload(
+          convertToBase64(files),
+          {
+            folder: "/vinted/userAvatar",
+            public_id: newUser._id,
+          }
+        );
+        newUser.account.avatar = uploadPicture;
 
         //Save user in the DB
         await newUser.save();
@@ -90,18 +87,11 @@ router.post("/user/login", async (req, res) => {
     const body = req.body;
     const { email, password } = body;
 
-    //Search username in the DB
-    const findUser = await User.findOne({ email: email });
-    // console.log(findUser);
-
-    //Check if username is NOT empty
     if (email) {
-      // Check if username is found in DB
+      const findUser = await User.findOne({ email: email });
       if (findUser) {
-        //Create a hash with DB user salt + password and encrypt it
         const hashCheck = SHA256(findUser.salt + password).toString(encBase64);
 
-        //Check if hash from provided password is same as DB hash
         if (findUser.hash === hashCheck) {
           //Create a response with the info
           const userInfo = {
