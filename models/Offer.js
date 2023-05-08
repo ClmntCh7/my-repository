@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 
 const Offer = mongoose.model("Offer", {
+  _id: Number,
   product_name: {
     type: String,
     maxLength: 50,

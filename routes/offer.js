@@ -10,14 +10,16 @@ router.get("/offer/:id", async (req, res) => {
   try {
     const params = req.params;
     const { id } = params;
-    console.log(params);
-    console.log(req.user._id);
+    console.log("params", params);
+    console.log("id", id);
 
     // const findOfferById = await Offer.findById(id).populate({
     //   path: "owner",
     //   select: "account",
     // });
+
     const findOfferById = await Offer.findById(id).populate("owner", "account");
+    console.log(findOfferById);
 
     res.status(200).json({ message: findOfferById });
   } catch (error) {
