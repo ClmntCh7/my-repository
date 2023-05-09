@@ -94,20 +94,26 @@ router.get("/offers", async (req, res) => {
 });
 
 const convertToBase64 = (file) => {
-  console.log("ICI", file);
+  console.log("file", file);
+  console.log("file.data", file.data);
   return `data:${file.mimetype};base64,${file.data.toString("base64")}`;
 };
 
-// POST an offer
+//  ***************************************** POST an offer ***********************************************
 router.post(
   "/offer/publish",
   isAuthenticated,
   fileUpload(),
   async (req, res) => {
     try {
-      const files = req.files.product_image;
-      console.log(files);
+      let files = req.files.picture;
+      if (!files.length) {
+        files = [];
+        files.push(req.files.picture);
+      }
+
       const user = req.user;
+
       const {
         account: {
           username,
@@ -117,6 +123,7 @@ router.post(
       } = user;
 
       const body = req.body;
+
       const {
         product_name,
         product_description,
@@ -141,7 +148,6 @@ router.post(
         ],
         owner: user,
       });
-
       const arrayOfPictures = files.map((file) => {
         return cloudinary.uploader.upload(convertToBase64(file), {
           folder: "vinted/offers",
@@ -158,6 +164,7 @@ router.post(
 
       res.status(200).json({ message: newOffer });
     } catch (error) {
+      console.log(error);
       res.status(500).json({ message: error.message });
     }
   }
